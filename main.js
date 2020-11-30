@@ -2,28 +2,19 @@ function messageGuildOwner(guild, message) {
     guild.members.cache.find(c => c.id == guild.owner.user.id).send(message);
 }
 
-var ownersDiscordTag = "Conni!~#0920";
-var versionNum = "V0.0.1.0b";
-
-const Discord = require("discord.js");
-
 const config = require("./config.json");
 
+const Discord = require("discord.js");
 const client = new Discord.Client({ fetchAllMembers: true })
+
+
+
+var ownersDiscordTag = "Conni!~#0920";
+var versionNum = "V0.0.1.0b";
 
 //
 // DISCORD JS
 //
-
-// Bot status
-client
-    .on("reconnecting", () => {
-        console.warn("Fyre is reconnecting...");
-    })
-    .on("disconnect", () => {
-        console.warn("Warning! Fyre has disconnected!");
-    });
-
 
 client.on("guildCreate", async guild => {
     console.log(`New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`);
@@ -35,7 +26,6 @@ client.on("guildCreate", async guild => {
     client.user.setActivity(statusText);
 
 });
-
 
 client.on("message", async message => {
     statusText = `${client.guilds.cache.size} Servers!`;
@@ -55,7 +45,6 @@ client.on("message", async message => {
             .catch(console.error);
     }
 
-    console.log(command);
     if (!message.content.startsWith(prefix)) return;
 
     if (command === 'delete') {
@@ -128,8 +117,8 @@ client.on("message", async message => {
         }
     }
     else if (command === "close") {
-        if (message.channel.name.startsWith("priv-room")) {
-            message.channel.delete();
+        if (message.channel.name.startsWith("diary-")) {
+            message.updateOverwrite(message.author.id, { VIEW_CHANNEL: false });
         }
     }
     else if (command === "info") {
