@@ -15,27 +15,14 @@ const client = new Discord.Client({ fetchAllMembers: false })
 // DISCORD JS
 //
 
-// Bot status
-client
-    .on("reconnecting", () => {
-        console.warn("Fyre is reconnecting...");
-    })
-    .on("disconnect", () => {
-        console.warn("Warning! Fyre has disconnected!");
-    });
-
 client.on("ready", async () => {
     console.log(`Bot has started, with ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds.`);
 });
 
 client.on("guildCreate", async guild => {
     console.log(`New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`);
-    messageGuildOwner(guild, "This message is sent to the server owner only!");
-    messageGuildOwner(guild, "Thanks for adding me to your server here is the website link for my command list!");
-    messageGuildOwner(guild, "https://connithekiwi.github.io/Fyre-The-Cleaner/");
 
-    statusText = `${client.guilds.cache.size} Servers!`;
-    client.user.setActivity(statusText);
+    client.user.setActivity(`${client.guilds.cache.size} Servers!`);
 
 });
 
@@ -45,8 +32,6 @@ var diaryChannelName_Archived = "diaries_a";
 
 client.on("message", async message => {
     if (message.author.bot) return;
-
-    let verifiedRole = message.guild.roles.cache.get("691793052955836476");
 
     client.user.setActivity(`${client.guilds.cache.size} Servers!`);
 
@@ -63,6 +48,7 @@ client.on("message", async message => {
     }
 
     if (!message.content.startsWith(prefix)) return;
+    let verifiedRole = message.guild.roles.cache.get("691793052955836476");
 
     if (command === 'delete') {
         if (args[0] === "my") {
