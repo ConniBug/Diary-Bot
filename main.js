@@ -29,6 +29,9 @@ client.on("guildCreate", async guild => {
 var prefix = config.prefix; 
 var diaryChannelName = "diaries";
 var diaryChannelName_Archived = "diaries_a";
+let verifiedRole = message.guild.roles.cache.find(c => c.name == "verified");
+var diaryChannelNameStartsWith = "diary-";
+var staffRoleID = "716273854594678844";
 
 client.on("message", async message => {
     if (message.author.bot) return;
@@ -48,7 +51,6 @@ client.on("message", async message => {
     }
 
     if (!message.content.startsWith(prefix)) return;
-    let verifiedRole = message.guild.roles.cache.get("691793052955836476");
 
     if (command === 'delete') {
         if (args[0] === "my") {
@@ -137,7 +139,7 @@ client.on("message", async message => {
         }
     }
     else if (command === "public") {
-        if (message.channel.name.startsWith("diary-")) {
+        if (message.channel.name.startsWith(diaryChannelNameStartsWith)) {
             let channel = message.guild.channels.cache.find(c => c.name == message.channel.name);
             channel.send(". }")
                 .then(msg => {
@@ -214,7 +216,7 @@ client.on("message", async message => {
             .catch(console.error);
     }
     else if (command === "private") {
-        if (message.channel.name.startsWith("diary-")) {
+        if (message.channel.name.startsWith(diaryChannelNameStartsWith)) {
             let channel = message.guild.channels.cache.find(c => c.name == message.channel.name);
             channel.updateOverwrite(verifiedRole.id, { VIEW_CHANNEL: false });
             channel.send("Diary has been made private!");
@@ -227,7 +229,7 @@ client.on("message", async message => {
         }
     }
     else if (command === "archive") {
-        if (message.channel.name.startsWith("diary-")) {
+        if (message.channel.name.startsWith(diaryChannelNameStartsWith)) {
             let channel = message.guild.channels.cache.find(c => c.name == message.channel.name);
             channel.updateOverwrite(verifiedRole.id             , { VIEW_CHANNEL : false });
             channel.updateOverwrite(message.author.id,            { SEND_MESSAGES: false });
@@ -239,17 +241,17 @@ client.on("message", async message => {
         }
     }
     else if (command === "yesstaff") {
-        if (message.channel.name.startsWith("diary-")) {
+        if (message.channel.name.startsWith(diaryChannelNameStartsWith)) {
             let channel = message.guild.channels.cache.find(c => c.name == message.channel.name);
-            channel.updateOverwrite("716273854594678844", { VIEW_CHANNEL: true });
+            channel.updateOverwrite(staffRoleID, { VIEW_CHANNEL: true });
 
             channel.send("Staff can now see this!");
         }
     }
     else if (command === "nostaff") {
-        if (message.channel.name.startsWith("diary-")) {
+        if (message.channel.name.startsWith(diaryChannelNameStartsWith)) {
             let channel = message.guild.channels.cache.find(c => c.name == message.channel.name);
-            channel.updateOverwrite("716273854594678844", { VIEW_CHANNEL: false });
+            channel.updateOverwrite(staffRoleID, { VIEW_CHANNEL: false });
 
             channel.send("Staff cant see this!");
         }
