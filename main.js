@@ -21,7 +21,6 @@ client.on("ready", async () => {
 
 client.on("guildCreate", async guild => {
     console.log(`New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`);
-
     client.user.setActivity(`${client.guilds.cache.size} Servers!`);
 
 });
