@@ -66,8 +66,8 @@ var staffRoleID = "716273854594678844";
 client.on("message", async message => {
     if (message.author.bot) return;
 
-    verifiedRole = message.guild.roles.cache.find(c => c.name == "verified");
-    
+    verifiedRole = message.guild.roles.cache.find(c => c.id == "691793052955836476");
+    console.log(verifiedRole);
     client.user.setActivity(`${client.guilds.cache.size} Servers!`);
 
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
