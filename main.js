@@ -17,6 +17,37 @@ const client = new Discord.Client({ fetchAllMembers: false })
 
 client.on("ready", async () => {
     console.log(`Bot has started, with ${client.users.cache.size} users, in ${client.channels.cache.size} channels of ${client.guilds.cache.size} guilds.`);
+
+    client.api.applications(client.user.id).guilds("689925894764232788").commands.post({
+        data: {
+            name: "hello",
+            description: "hello world command"
+            // possible options here e.g. options: [{...}]
+        },
+        data: {
+            name: "restart",
+            description: "Restart the bot."
+        }
+
+    });
+
+
+    client.ws.on('INTERACTION_CREATE', async interaction => {
+        const command = interaction.data.name.toLowerCase();
+        const args = interaction.data.options;
+
+        if (command === 'hello'){
+            client.api.interactions(interaction.id, interaction.token).callback.post({
+                data: {
+                    type: 4,
+                    data: {
+                        content: "hello world!!!"
+                    }
+                }
+            })
+        }
+        console.log(interaction);
+    });
 });
 
 client.on("guildCreate", async guild => {
@@ -28,13 +59,15 @@ client.on("guildCreate", async guild => {
 var prefix = config.prefix; 
 var diaryChannelName = "diaries";
 var diaryChannelName_Archived = "diaries_a";
-let verifiedRole = message.guild.roles.cache.find(c => c.name == "verified");
+let verifiedRole;
 var diaryChannelNameStartsWith = "diary-";
 var staffRoleID = "716273854594678844";
 
 client.on("message", async message => {
     if (message.author.bot) return;
 
+    verifiedRole = message.guild.roles.cache.find(c => c.name == "verified");
+    
     client.user.setActivity(`${client.guilds.cache.size} Servers!`);
 
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
