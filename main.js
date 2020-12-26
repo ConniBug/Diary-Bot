@@ -3,7 +3,7 @@ function messageGuildOwner(guild, message) {
 }
 
 var ownersDiscordTag = "Conni!~#0920";
-var versionNum = "V0.0.1.0b";
+var versionNum = "V0.0.1.2b";
 
 const Discord = require("discord.js");
 
