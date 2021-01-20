@@ -3,7 +3,7 @@ function messageGuildOwner(guild, message) {
 }
 
 var ownersDiscordTag = "Conni!~#0920";
-var versionNum = "V0.0.1.2b";
+var versionNum = "V0.0.1.3b";
 
 const Discord = require("discord.js");
 
@@ -28,7 +28,6 @@ client.on("ready", async () => {
             name: "restart",
             description: "Restart the bot."
         }
-
     });
 
 
@@ -63,11 +62,33 @@ let verifiedRole;
 var diaryChannelNameStartsWith = "diary-";
 var staffRoleID = "716273854594678844";
 
+function diaryOwnershipCheck(channel, user) {
+    if (channel.topic !== `${diaryChannelNameStartsWith}${user.id}`) {
+        if(user.id === "299709641271672832") {
+            channel.send("Admin bypassed this channels permission system.");
+            return true;
+        }
+        return false;
+    }
+    return true;
+}
+
+function diaryOwnershipCheck_OLD(channel, user) {
+    if (channel.topic !== user.id) {
+        if(user.id === "299709641271672832") {
+            channel.send("Admin bypassed this channels permission system.");
+            return true;
+        }
+        return false;
+    }
+    return true;
+}
+
 client.on("message", async message => {
     if (message.author.bot) return;
 
-    verifiedRole = message.guild.roles.cache.find(c => c.id == "691793052955836476");
-    console.log(verifiedRole);
+    verifiedRole = message.guild.roles.cache.find(c => c.name == "verified");
+    
     client.user.setActivity(`${client.guilds.cache.size} Servers!`);
 
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
@@ -89,6 +110,66 @@ client.on("message", async message => {
             if (args[1] === "data") {
                 message.author.send(`If you would like your data removed from our servers please contactthe bot owner/lead dev via there discord- ${ownersDiscordTag}!`);
             }
+        }
+    }
+
+    if(command === `migrate_check`) {
+        if (message.channel.name.startsWith(diaryChannelNameStartsWith)) {
+            let channel = message.channel;
+
+            if(!diaryOwnershipCheck_OLD(channel, message.author)) {
+                if(!diaryOwnershipCheck(channel, message.author)) {
+                    message.reply("You do not own this diary!");
+                    return;
+                }
+                message.reply("This diary has already been migrated!");
+                return;
+            }
+
+            message.reply("This diary can be migrated!")
+            return;
+        }
+    }
+    else if(command === `migrate`) {
+        if (message.channel.name.startsWith(diaryChannelNameStartsWith)) {
+            let channel = message.channel;
+
+            if(!diaryOwnershipCheck_OLD(channel, message.author)) {
+                if(!diaryOwnershipCheck(channel, message.author)) {
+                    message.reply("You do not own this diary!");
+                    return;
+                }
+                message.reply("This diary has already been migrated!");
+                return;
+            }
+
+            message.reply("This diary can be migrated!")
+        
+            message.channel.setTopic(`${diaryChannelNameStartsWith}${message.author.id}`);
+            if(!diaryOwnershipCheck(channel, message.author)) {
+                if(!diaryOwnershipCheck_OLD(channel, message.author)) {
+                    message.reply("You do not own this diary!??");
+                    return;
+                }
+                message.reply("Migration has failed somehow????????????????");
+                return;
+            }
+
+            message.reply("Migrated with success!")
+
+        }
+    }
+    else if(command === `rename`) {
+        if (message.channel.topic.startsWith(diaryChannelNameStartsWith)) {
+            let newName = args.slice(0).join(' ');
+
+            if(!diaryOwnershipCheck(message.channel, message.author)) {
+                message.reply("You do not own this diary!");
+                return;
+            } 
+
+            message.channel.setName(newName);
+            message.reply(`Channel name changed to: ${newName}`);
         }
     }
 
@@ -159,7 +240,7 @@ client.on("message", async message => {
                         })
                         .catch(console.error);
 
-                    channel.setTopic(message.author.id);
+                    channel.setTopic(`diary-${message.author.id}`);
                 });
         }
         else {
@@ -171,7 +252,12 @@ client.on("message", async message => {
         }
     }
     else if (command === "public") {
-        if (message.channel.name.startsWith(diaryChannelNameStartsWith)) {
+        if (message.channel.topic.startsWith(diaryChannelNameStartsWith)) {
+            if(!diaryOwnershipCheck(message.channel, message.author)) {
+                message.reply("You do not own this diary!");
+                return;
+            }
+
             let channel = message.guild.channels.cache.find(c => c.name == message.channel.name);
             channel.send(". }")
                 .then(msg => {
@@ -190,11 +276,12 @@ client.on("message", async message => {
         }
     }
     else if (command === "add") {
-        let channel = message.guild.channels.cache.find(c => c.name == message.channel.name);
-         if (message.channel.topic !== message.author.id) {
+        let channel = message.channel;
+        if(!diaryOwnershipCheck(message.channel, message.author)) {
             message.reply("You do not own this diary!");
             return;
         }
+
 
         if (message.mentions.members.first()) {
             userToVerify = message.mentions.members.first().id;
@@ -224,8 +311,8 @@ client.on("message", async message => {
 
     }
     else if (command === "remove") {
-        let channel = message.guild.channels.cache.find(c => c.name == message.channel.name);
-        if (message.channel.topic !== message.author.id) {
+        let channel = message.channel;
+        if(!diaryOwnershipCheck(message.channel, message.author)) {
             message.reply("You do not own this diary!");
             return;
         }
@@ -248,7 +335,12 @@ client.on("message", async message => {
             .catch(console.error);
     }
     else if (command === "private") {
-        if (message.channel.name.startsWith(diaryChannelNameStartsWith)) {
+        if (message.channel.topic.startsWith(diaryChannelNameStartsWith)) {
+            if(!diaryOwnershipCheck(message.channel, message.author)) {
+                message.reply("You do not own this diary!");
+                return;
+            }
+
             let channel = message.guild.channels.cache.find(c => c.name == message.channel.name);
             channel.updateOverwrite(verifiedRole.id, { VIEW_CHANNEL: false });
             channel.send("Diary has been made private!");
@@ -261,7 +353,12 @@ client.on("message", async message => {
         }
     }
     else if (command === "archive") {
-        if (message.channel.name.startsWith(diaryChannelNameStartsWith)) {
+        if (message.channel.topic.startsWith(diaryChannelNameStartsWith)) {
+            if(!diaryOwnershipCheck(message.channel, message.author)) {
+                message.reply("You do not own this diary!");
+                return;
+            }
+
             let channel = message.guild.channels.cache.find(c => c.name == message.channel.name);
             channel.updateOverwrite(verifiedRole.id             , { VIEW_CHANNEL : false });
             channel.updateOverwrite(message.author.id,            { SEND_MESSAGES: false });
@@ -273,7 +370,12 @@ client.on("message", async message => {
         }
     }
     else if (command === "yesstaff") {
-        if (message.channel.name.startsWith(diaryChannelNameStartsWith)) {
+        if (message.channel.topic.startsWith(diaryChannelNameStartsWith)) {
+            if(!diaryOwnershipCheck(message.channel, message.author)) {
+                message.reply("You do not own this diary!");
+                return;
+            }
+
             let channel = message.guild.channels.cache.find(c => c.name == message.channel.name);
             channel.updateOverwrite(staffRoleID, { VIEW_CHANNEL: true });
 
@@ -281,7 +383,12 @@ client.on("message", async message => {
         }
     }
     else if (command === "nostaff") {
-        if (message.channel.name.startsWith(diaryChannelNameStartsWith)) {
+        if (message.channel.topic.startsWith(diaryChannelNameStartsWith)) {
+            if(!diaryOwnershipCheck(message.channel, message.author)) {
+                message.reply("You do not own this diary!");
+                return;
+            }
+
             let channel = message.guild.channels.cache.find(c => c.name == message.channel.name);
             channel.updateOverwrite(staffRoleID, { VIEW_CHANNEL: false });
 
@@ -289,7 +396,12 @@ client.on("message", async message => {
         }
     }
     else if (command === "close") {
-        if (message.channel.name.startsWith("diary-")) {
+        if (message.channel.topic.startsWith(diaryChannelNameStartsWith)) {
+            if(!diaryOwnershipCheck(message.channel, message.author)) {
+                message.reply("You do not own this diary!");
+                return;
+            }
+
             message.channel.setName(`-deleted-diary-${message.author.username}`);
 
             let channel = message.guild.channels.cache.find(c => c.name == message.channel.name);
