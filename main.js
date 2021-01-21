@@ -172,6 +172,27 @@ client.on("message", async message => {
             message.reply(`Channel name changed to: ${newName}`);
         }
     }
+    else if(command === `transfer`) {
+        if (message.channel.topic.startsWith(diaryChannelNameStartsWith)) {
+            let userID = args.slice(0).join(' ');
+
+            if(!diaryOwnershipCheck(message.channel, message.author)) {
+                message.reply("You do not own this diary!");
+                return;
+            } 
+
+            if (message.mentions.members.first()) {
+                userID = message.mentions.members.first().id;
+    
+            }
+            else {
+                userID = args.slice(0).join(' ');
+            } 
+
+            message.channel.setTopic(`diary-${userID}`);
+            message.reply(`Transfered ownership to: <@${userID}>`);
+        }
+    }
 
     if (command === 'restart') {
         if (message.author.id !== '299709641271672832') {
