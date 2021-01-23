@@ -87,7 +87,7 @@ function diaryOwnershipCheck_OLD(channel, user) {
 client.on("message", async message => {
     if (message.author.bot) return;
 
-    verifiedRole = message.guild.roles.cache.find(c => c.name == "verified");
+    verifiedRole = message.guild.roles.cache.find(c => c.name == "Verified");
     
     client.user.setActivity(`${client.guilds.cache.size} Servers!`);
 
