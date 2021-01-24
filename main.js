@@ -3,7 +3,7 @@ function messageGuildOwner(guild, message) {
 }
 
 var ownersDiscordTag = "Conni!~#0920";
-var versionNum = "V0.0.1.3b";
+var versionNum = "V0.0.1.8b";
 
 const Discord = require("discord.js");
 
@@ -294,6 +294,34 @@ client.on("message", async message => {
                 })
                 .catch(console.error);  
             channel.send("Diary has been made public!");
+        }
+    }
+    else if (command === "commenting") {
+        if (message.channel.topic.startsWith(diaryChannelNameStartsWith)) {
+            if(!diaryOwnershipCheck(message.channel, message.author)) {
+                message.reply("You do not own this diary!");
+                return;
+            }
+            let channel = message.guild.channels.cache.find(c => c.name == message.channel.name);
+            message.delete();
+            if(args[0] === "on") {
+                channel.send(".")
+                .then(msg => {
+                    msg.delete({ timeout: 100 })
+                    channel.updateOverwrite(verifiedRole.id, { SEND_MESSAGES: true });
+                })
+                .catch(console.error); 
+                channel.send("Diary commenting has been enabled.")
+            }
+            else if(args[0] === "off") {
+                channel.send(".")
+                .then(msg => {
+                    msg.delete({ timeout: 100 })
+                    channel.updateOverwrite(verifiedRole.id, { SEND_MESSAGES: false });
+                })
+                .catch(console.error); 
+                channel.send("Diary commenting has been disabled.")
+            }
         }
     }
     else if (command === "add") {
