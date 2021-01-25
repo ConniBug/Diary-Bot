@@ -88,7 +88,14 @@ client.on("message", async message => {
     if (message.author.bot) return;
 
     verifiedRole = message.guild.roles.cache.find(c => c.name == "Verified");
-    
+    if(verifiedRole == undefined) {
+        console.log("role is undefined");
+        let chan = message.guild.channels.cache.find(c => c.name == "diary-roleid");
+        verifiedRole = message.guild.roles.cache.find(c => c.id == chan.topic);
+        console.log(verifiedRole.name);
+    }
+    console.log(verifiedRole.name);
+
     client.user.setActivity(`${client.guilds.cache.size} Servers!`);
 
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
@@ -391,14 +398,13 @@ client.on("message", async message => {
             }
 
             let channel = message.guild.channels.cache.find(c => c.name == message.channel.name);
-            channel.updateOverwrite(verifiedRole.id, { VIEW_CHANNEL: false });
             channel.send("Diary has been made private!");
-            channel.send(". }") 
+            channel.send(". }")
                 .then(msg => {
                     msg.delete({ timeout: 500 })
-                    channel.updateOverwrite(verifiedRole.id, { SEND_MESSAGES: false });
+                    channel.updateOverwrite(verifiedRole.id, { VIEW_CHANNEL: false });
                 })
-                .catch(console.error);     
+                .catch(console.error);   
         }
     }
     else if (command === "archive") {
