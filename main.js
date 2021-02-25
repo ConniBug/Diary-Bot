@@ -200,8 +200,7 @@ client.on("message", async message => {
             message.reply(`Transfered ownership to: <@${userID}>`);
         }
     }
-
-    if (command === 'restart') {
+    else if (command === 'restart') {
         if (message.author.id !== '299709641271672832') {
             return;
         }
