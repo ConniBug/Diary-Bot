@@ -236,6 +236,7 @@ client.on("message", async message => {
    // console.log(verifiedRole.name);
 
     //client.user.setActivity(`${client.guilds.cache.size} Servers!`);
+    client.user.setActivity(`Trans Right!`);
 
     const args = message.content.slice(prefix.length).trim().split(/ +/g);
     const command = args.shift().toLowerCase();
